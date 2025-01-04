@@ -1,0 +1,4 @@
+{
+  "cSpell.words": ["trivago", "tseslint"],
+  "typescript.tsdk": "node_modules\\typescript\\lib"
+}
