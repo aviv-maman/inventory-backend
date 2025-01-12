@@ -60,8 +60,8 @@ type Errors = Error | MongooseError.CastError | MongoServerError | MongooseError
 const errorHandler = (err: Errors, req: Request, res: Response, next: NextFunction) => {
   const appError = {
     ...err,
-    code: 'code' in err ? Number(err.code) : 500,
-    statusCode: 'statusCode' in err ? Number(err.statusCode) : 500,
+    code: 'code' in err ? err.code : 500,
+    statusCode: 'statusCode' in err && !isNaN(err.statusCode) ? Number(err.statusCode) : 500,
   };
 
   if (process.env.NODE_ENV === 'development') {

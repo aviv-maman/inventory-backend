@@ -3,7 +3,7 @@ import type { SessionPayload } from '../types/auth';
 import AppError from '../utils/AppError.ts';
 import { catchAsync } from '../utils/catchAsync.ts';
 import { compare } from 'bcrypt';
-import type { NextFunction, Request, Response } from 'express';
+import type { Response } from 'express';
 import { SignJWT, jwtVerify } from 'jose';
 
 const AUTH_SETTINGS = {
@@ -76,6 +76,7 @@ const changedPasswordAfter = (JWTTimestamp?: number, passwordChangedAt?: Date | 
 //protectResource
 const verifySession = catchAsync(async (req, res, next) => {
   const token = req.cookies.session;
+
   if (!token) {
     return next(new AppError('You are not logged in! Please log in to get access.', 401));
   }
@@ -94,6 +95,7 @@ const verifySession = catchAsync(async (req, res, next) => {
     return next(new AppError('User recently changed password! Please log in again.', 401));
   }
 
+  req.body.user = currentUser;
   next();
 });
 
@@ -125,10 +127,10 @@ const login = catchAsync(async (req, res, next) => {
   createSession(user.id, 200, res);
 });
 
-const logout = async (req: Request, res: Response, next: NextFunction) => {
+const logout = catchAsync(async (req, res, next) => {
   res.clearCookie('session');
   res.status(200).json({ success: true });
-};
+});
 
 const authHandler = { verifySession, register, login, logout };
 
