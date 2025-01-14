@@ -75,7 +75,9 @@ const changedPasswordAfter = (JWTTimestamp?: number, passwordChangedAt?: Date | 
 
 //protectResource
 const verifySession = catchAsync(async (req, res, next) => {
-  const token = req.cookies.session;
+  const token = req.headers.authorization?.startsWith('Bearer')
+    ? req.headers.authorization.split(' ')[1]
+    : (req.cookies.session as string | undefined);
 
   if (!token) {
     return next(new AppError('You are not logged in! Please log in to get access.', 401));
