@@ -44,13 +44,13 @@ const errorHandler = (err: Errors, req: Request, res: Response, next: NextFuncti
 
     // Custom AppError, trusted error: send message to client
     if (err instanceof AppError) {
-      return res.status(Number(err.statusCode)).json({
+      res.status(Number(err.statusCode)).json({
         message: err.message,
       });
     }
     // Programming or other unknown error: don't leak error details
     console.error('ERROR 💥', err);
-    return res.status(500).json({
+    res.status(500).json({
       message: 'Something went wrong',
     });
   }
