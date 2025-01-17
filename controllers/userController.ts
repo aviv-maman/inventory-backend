@@ -8,8 +8,8 @@ const getMe = catchAsync(async (req, res, next) => {
   res.status(200).json({ success: true, user: req.body.user });
 });
 
-const userHandler = {
+const userController = {
   getMe,
 };
 
-export default userHandler;
+export default userController;

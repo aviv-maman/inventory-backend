@@ -3,9 +3,9 @@ import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
 import connectDB from './configs/database.ts';
-import errorHandler from './handlers/errorHandler.ts';
 import router from './routes/index.ts';
 import AppError from './utils/AppError.ts';
+import errorHandler from './utils/errorHandler.ts';
 
 const app = express();
 const PORT = process.env.PORT || 5000;

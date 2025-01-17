@@ -134,6 +134,6 @@ const logout = catchAsync(async (req, res, next) => {
   res.status(200).json({ success: true });
 });
 
-const authHandler = { verifySession, register, login, logout };
+const authController = { verifySession, register, login, logout };
 
-export default authHandler;
+export default authController;
