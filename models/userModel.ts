@@ -54,7 +54,6 @@ const userSchema = new Schema(
     active: {
       type: Boolean,
       default: true,
-      select: false,
     },
   },
   {
