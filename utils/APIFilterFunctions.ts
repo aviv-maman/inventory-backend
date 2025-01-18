@@ -211,7 +211,6 @@ class APIFilterFunctions {
     try {
       const result = await this.query.model.aggregate([{ $count: 'count' }]);
       this.queryString.count = result.length || 0;
-      console.log('Document count:', result[0].count);
     } catch (error) {
       console.error('Error with aggregate count:', error);
     }
