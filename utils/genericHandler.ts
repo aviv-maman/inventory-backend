@@ -99,8 +99,11 @@ const getAll = (Model: Model<any>) =>
 
     const paginatedDocs = await paginatedQuery.query;
     const totalCount = await countQuery.query.countDocuments();
+    const totalPages = Math.ceil(totalCount / Number(req.query.limit));
 
-    res.status(200).json({ success: true, data: paginatedDocs, currentCount: paginatedDocs.length, totalCount });
+    res
+      .status(200)
+      .json({ success: true, data: paginatedDocs, currentCount: paginatedDocs.length, totalCount, totalPages });
   });
 
 const genericHandler = {
