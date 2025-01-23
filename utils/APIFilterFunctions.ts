@@ -14,6 +14,8 @@ type QueryString = {
   page?: string;
   limit?: string;
   count?: number;
+  role?: string;
+  email?: string;
 };
 
 class APIFilterFunctions {
@@ -26,7 +28,18 @@ class APIFilterFunctions {
 
   filter() {
     const queryObj = { ...this.queryString };
-    const excludedFields = ['page', 'sort', 'limit', 'fields', 'type', 'name', 'release_date', 'from_date', 'to_date'];
+    const excludedFields = [
+      'page',
+      'sort',
+      'limit',
+      'fields',
+      'type',
+      'name',
+      'release_date',
+      'from_date',
+      'to_date',
+      'role',
+    ];
     excludedFields.forEach((element) => delete (queryObj as unknown as keyof QueryString as any)[element]);
 
     // 1B) Advanced filtering
@@ -41,10 +54,21 @@ class APIFilterFunctions {
 
   typeFilter() {
     if (this.queryString.type) {
-      const filterByType = this.queryString.type.split(',').join(', ');
+      const filterByType = this.queryString.type.split(',');
       this.query = this.query.find({ type: { $in: filterByType } });
     } else {
       this.queryString.type = undefined;
+    }
+
+    return this;
+  }
+
+  roleFilter() {
+    if (this.queryString.role) {
+      const filterByRole = this.queryString.role.split(',');
+      this.query = this.query.find({ role: { $in: filterByRole } });
+    } else {
+      this.queryString.role = undefined;
     }
 
     return this;
@@ -57,10 +81,29 @@ class APIFilterFunctions {
       //   name: { $text: { $search: filterByName, $caseSensitive: false } },
       // });
       this.query = this.query.find({
-        name: { $regex: filterByName, $options: 'i' },
+        $or: [
+          { firstName: { $regex: filterByName, $options: 'i' } },
+          { lastName: { $regex: filterByName, $options: 'i' } },
+          { name: { $regex: filterByName, $options: 'i' } },
+          { title: { $regex: filterByName, $options: 'i' } },
+          { description: { $regex: filterByName, $options: 'i' } },
+        ],
       });
     } else {
       this.queryString.name = undefined;
+    }
+
+    return this;
+  }
+
+  emailFilter() {
+    if (this.queryString.email) {
+      const filterByEmail = this.queryString.email;
+      this.query = this.query.find({
+        email: { $regex: filterByEmail, $options: 'i' },
+      });
+    } else {
+      this.queryString.email = undefined;
     }
 
     return this;
@@ -204,6 +247,7 @@ class APIFilterFunctions {
 
   count() {
     this.queryString.count = Number(this.query.countDocuments()) || 0;
+
     return this;
   }
 
@@ -214,6 +258,7 @@ class APIFilterFunctions {
     } catch (error) {
       console.error('Error with aggregate count:', error);
     }
+
     return this;
   }
 }
