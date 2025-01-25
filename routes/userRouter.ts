@@ -8,5 +8,6 @@ const userRouter = Router();
 userRouter.use(authController.verifySession);
 
 userRouter.get('/get-all', userController.getAllUsers);
+userRouter.post('/add-employee', userController.createUser);
 
 export default userRouter;
