@@ -2,6 +2,7 @@ import { UserModel } from '../models/userModel.ts';
 import AppError from '../utils/AppError.ts';
 import { catchAsync } from '../utils/catchAsync.ts';
 import genericHandler from '../utils/genericHandler.ts';
+import helpers from '../utils/helpers.ts';
 
 const getMe = catchAsync(async (req, res, next) => {
   if (!req.body.localUser) {
@@ -13,8 +14,6 @@ const getMe = catchAsync(async (req, res, next) => {
 const getAllUsers = genericHandler.getAll(UserModel);
 
 const createUser = catchAsync(async (req, res, next) => {
-  const isActive = req.body.active === 'active' || req.body.active === 1 ? true : false;
-
   const newUser = await UserModel.create({
     firstName: req.body.firstName,
     lastName: req.body.lastName,
@@ -22,7 +21,7 @@ const createUser = catchAsync(async (req, res, next) => {
     password: req.body.password,
     passwordConfirmation: req.body.passwordConfirmation,
     role: 'employee',
-    active: isActive,
+    active: helpers.checkIsBoolean(req.body.active),
   });
 
   res.status(201).json({
