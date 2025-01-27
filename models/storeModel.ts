@@ -14,9 +14,20 @@ const storeSchema = new Schema(
       type: Boolean,
       required: [true, 'Activity status is required'],
     },
+    products: [
+      {
+        type: Schema.Types.ObjectId,
+        required: false,
+        ref: 'Product',
+      },
+    ],
+    __v: {
+      type: Number,
+      select: false,
+    },
   },
   {
-    timestamps: true, // add updatedAt
+    timestamps: true,
   },
 );
 
