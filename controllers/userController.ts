@@ -7,13 +7,13 @@ const getMe = catchAsync(async (req, res, next) => {
   if (!req.body.user) {
     return next(new AppError('The user belonging to this token does no longer exist.', 404));
   }
-  res.status(200).json({ success: true, user: req.body.user });
+  res.status(200).json({ success: true, data: req.body.user });
 });
 
 const getAllUsers = genericHandler.getAll(UserModel);
 
 const createUser = catchAsync(async (req, res, next) => {
-  const activeStatus = req.body.active === 'active' || req.body.active === 1 ? true : false;
+  const isActive = req.body.active === 'active' || req.body.active === 1 ? true : false;
 
   const newUser = await UserModel.create({
     firstName: req.body.firstName,
@@ -22,7 +22,7 @@ const createUser = catchAsync(async (req, res, next) => {
     password: req.body.password,
     passwordConfirmation: req.body.passwordConfirmation,
     role: 'employee',
-    active: activeStatus,
+    active: isActive,
   });
 
   res.status(201).json({

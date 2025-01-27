@@ -1,6 +1,5 @@
 import { hash } from 'bcrypt';
-import { Schema, model } from 'mongoose';
-import type { InferSchemaType } from 'mongoose';
+import { type InferSchemaType, Schema, model } from 'mongoose';
 
 const userSchema = new Schema(
   {

@@ -1,4 +1,4 @@
-import { UserModel } from '../models/userModel.ts';
+import { type User, UserModel } from '../models/userModel.ts';
 import type { SessionPayload } from '../types/auth';
 import AppError from '../utils/AppError.ts';
 import { catchAsync } from '../utils/catchAsync.ts';
@@ -134,6 +134,15 @@ const logout = catchAsync(async (req, res, next) => {
   res.status(200).json({ success: true });
 });
 
-const authController = { verifySession, register, login, logout };
+const restrictTo = (...roles: User['role'][]) =>
+  catchAsync(async (req, res, next) => {
+    if (!roles.includes(req.body.user.role)) {
+      return next(new AppError('You do not have permission to perform this action', 403));
+    }
+
+    next();
+  });
+
+const authController = { verifySession, register, login, logout, restrictTo };
 
 export default authController;
