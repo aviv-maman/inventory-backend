@@ -1,10 +1,9 @@
 import { UserModel } from '../models/userModel.ts';
 import AppError from '../utils/AppError.ts';
-import { catchAsync } from '../utils/catchAsync.ts';
 import genericHandler from '../utils/genericHandler.ts';
 import helpers from '../utils/helpers.ts';
 
-const getMe = catchAsync(async (req, res, next) => {
+const getMe = helpers.catchAsync(async (req, res, next) => {
   if (!req.body.localUser) {
     return next(new AppError('The user belonging to this token does no longer exist.', 404));
   }
@@ -13,7 +12,7 @@ const getMe = catchAsync(async (req, res, next) => {
 
 const getAllUsers = genericHandler.getAll(UserModel);
 
-const createUser = catchAsync(async (req, res, next) => {
+const createUser = helpers.catchAsync(async (req, res, next) => {
   const newUser = await UserModel.create({
     firstName: req.body.firstName,
     lastName: req.body.lastName,

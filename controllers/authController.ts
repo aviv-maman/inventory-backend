@@ -1,7 +1,7 @@
 import { type User, UserModel } from '../models/userModel.ts';
 import type { SessionPayload } from '../types/auth';
 import AppError from '../utils/AppError.ts';
-import { catchAsync } from '../utils/catchAsync.ts';
+import helpers from '../utils/helpers.ts';
 import { compare } from 'bcrypt';
 import type { Response } from 'express';
 import { SignJWT, jwtVerify } from 'jose';
@@ -74,7 +74,7 @@ const changedPasswordAfter = (JWTTimestamp?: number, passwordChangedAt?: Date | 
 };
 
 //protectResource
-const verifySession = catchAsync(async (req, res, next) => {
+const verifySession = helpers.catchAsync(async (req, res, next) => {
   const token = req.headers.authorization?.startsWith('Bearer')
     ? req.headers.authorization.split(' ')[1]
     : (req.cookies.session as string | undefined);
@@ -101,7 +101,7 @@ const verifySession = catchAsync(async (req, res, next) => {
   next();
 });
 
-const register = catchAsync(async (req, res, next) => {
+const register = helpers.catchAsync(async (req, res, next) => {
   const newUser = await UserModel.create({
     firstName: req.body.firstName,
     lastName: req.body.lastName,
@@ -113,7 +113,7 @@ const register = catchAsync(async (req, res, next) => {
   createSession(newUser.id, 201, res);
 });
 
-const login = catchAsync(async (req, res, next) => {
+const login = helpers.catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -129,13 +129,13 @@ const login = catchAsync(async (req, res, next) => {
   createSession(user.id, 200, res);
 });
 
-const logout = catchAsync(async (req, res, next) => {
+const logout = helpers.catchAsync(async (req, res, next) => {
   res.clearCookie('session');
   res.status(200).json({ success: true });
 });
 
 const restrictTo = (...roles: User['role'][]) =>
-  catchAsync(async (req, res, next) => {
+  helpers.catchAsync(async (req, res, next) => {
     if (!roles.includes(req.body.localUser.role)) {
       return next(new AppError('You do not have permission to perform this action', 403));
     }

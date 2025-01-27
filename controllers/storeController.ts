@@ -1,8 +1,7 @@
 import { StoreModel } from '../models/storeModel.ts';
-import { catchAsync } from '../utils/catchAsync.ts';
 import helpers from '../utils/helpers.ts';
 
-const createStore = catchAsync(async (req, res, next) => {
+const createStore = helpers.catchAsync(async (req, res, next) => {
   const newStore = await StoreModel.create({
     name: req.body.name,
     location: req.body.location,

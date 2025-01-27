@@ -1,10 +1,10 @@
 import type { FilterQuery, Model } from 'mongoose';
 import APIFilterFunctions from './APIFilterFunctions.ts';
 import AppError from './AppError.ts';
-import { catchAsync } from './catchAsync.ts';
+import helpers from './helpers.ts';
 
 const deleteOne = (Model: Model<any>) =>
-  catchAsync(async (req, res, next) => {
+  helpers.catchAsync(async (req, res, next) => {
     const doc = await Model.findByIdAndDelete(req.params.id);
 
     if (!doc) {
@@ -15,7 +15,7 @@ const deleteOne = (Model: Model<any>) =>
   });
 
 const updateOne = (Model: Model<any>) =>
-  catchAsync(async (req, res, next) => {
+  helpers.catchAsync(async (req, res, next) => {
     const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
       new: true, // To send back the updated object
       runValidators: true, // To run validators in the schema
@@ -29,7 +29,7 @@ const updateOne = (Model: Model<any>) =>
   });
 
 const createOne = (Model: Model<any>) =>
-  catchAsync(async (req, res, next) => {
+  helpers.catchAsync(async (req, res, next) => {
     const doc = await Model.create(req.body);
 
     res.status(201).json({ success: true, data: doc });
@@ -44,7 +44,7 @@ const getOne = (
     match?: any;
   },
 ) =>
-  catchAsync(async (req, res, next) => {
+  helpers.catchAsync(async (req, res, next) => {
     let query = Model.findById(req.params.id);
     if (popOptions)
       query = query.populate({
@@ -63,7 +63,7 @@ const getOne = (
   });
 
 const getAll = (Model: Model<any>) =>
-  catchAsync(async (req, res, next) => {
+  helpers.catchAsync(async (req, res, next) => {
     // To allow for nested GET reviews on product (hack)
     let filter = {} as FilterQuery<any>;
     if (req.params.productId) filter = { product: req.params.productId };
