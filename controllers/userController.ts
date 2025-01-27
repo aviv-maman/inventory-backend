@@ -4,10 +4,10 @@ import { catchAsync } from '../utils/catchAsync.ts';
 import genericHandler from '../utils/genericHandler.ts';
 
 const getMe = catchAsync(async (req, res, next) => {
-  if (!req.body.user) {
+  if (!req.body.localUser) {
     return next(new AppError('The user belonging to this token does no longer exist.', 404));
   }
-  res.status(200).json({ success: true, data: req.body.user });
+  res.status(200).json({ success: true, data: req.body.localUser });
 });
 
 const getAllUsers = genericHandler.getAll(UserModel);

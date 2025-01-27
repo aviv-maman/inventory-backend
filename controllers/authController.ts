@@ -97,7 +97,7 @@ const verifySession = catchAsync(async (req, res, next) => {
     return next(new AppError('User recently changed password! Please log in again.', 401));
   }
 
-  req.body.user = currentUser;
+  req.body.localUser = currentUser;
   next();
 });
 
@@ -136,7 +136,7 @@ const logout = catchAsync(async (req, res, next) => {
 
 const restrictTo = (...roles: User['role'][]) =>
   catchAsync(async (req, res, next) => {
-    if (!roles.includes(req.body.user.role)) {
+    if (!roles.includes(req.body.localUser.role)) {
       return next(new AppError('You do not have permission to perform this action', 403));
     }
 
