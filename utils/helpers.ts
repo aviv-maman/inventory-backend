@@ -16,9 +16,20 @@ const checkIsBoolean = (arg: string | number | undefined) => {
   }
 };
 
+const deleteProperties = (obj: { [key: string]: any }, props: string[]) => {
+  return props.every((prop) => {
+    if (prop in obj) {
+      delete obj[prop];
+      return true;
+    }
+    return false;
+  });
+};
+
 const helpers = {
   catchAsync,
   checkIsBoolean,
+  deleteProperties,
 };
 
 export default helpers;

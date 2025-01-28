@@ -22,11 +22,10 @@ const createUser = helpers.catchAsync(async (req, res, next) => {
     role: 'employee',
     active: helpers.checkIsBoolean(req.body.active),
   });
+  const newUserObj = newUser.toObject();
+  helpers.deleteProperties(newUserObj, ['password', 'passwordChangedAt', 'passwordConfirmation']);
 
-  res.status(201).json({
-    success: true,
-    data: newUser._id,
-  });
+  res.status(201).json({ success: true, data: newUserObj });
 });
 
 const userController = {

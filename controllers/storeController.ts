@@ -8,7 +8,7 @@ const createStore = helpers.catchAsync(async (req, res, next) => {
     active: helpers.checkIsBoolean(req.body.active),
   });
 
-  res.status(200).json({ success: true, data: newStore });
+  res.status(201).json({ success: true, data: newStore });
 });
 
 const storeController = {
