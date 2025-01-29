@@ -1,8 +1,6 @@
-import ProductModel from '../models/productModel.ts';
-import AppError from '../utils/AppError.ts';
+import { ProductModel } from '../models/productModel.ts';
 import genericHandler from '../utils/genericHandler.ts';
 import helpers from '../utils/helpers.ts';
-import type { NextFunction, Request, Response } from 'express';
 
 //const createProduct = genericHandler.createOne(ProductModel);
 const getAllProducts = genericHandler.getAll(ProductModel);

@@ -16,9 +16,8 @@ const storeSchema = new Schema(
     },
     products: [
       {
-        type: Schema.Types.ObjectId,
-        required: false,
-        ref: 'Product',
+        product: { type: Schema.Types.ObjectId, ref: 'Product' },
+        stock: { type: Number, default: 0 },
       },
     ],
     __v: {
