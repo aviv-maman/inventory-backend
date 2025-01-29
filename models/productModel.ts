@@ -7,7 +7,6 @@ const productSchema = new Schema(
     price: {
       fullPrice: { type: Number, required: [true, 'A product must have a price'] },
       discountPercentage: { type: Number, default: 0 },
-      //discountPrice: { type: Number, required: false, default: 0 },
     },
     images: { type: [String], default: ['/placeholder.svg'] },
     categories: { type: [String], required: [true, 'Categories are required'] },
