@@ -11,27 +11,20 @@ const getMe = helpers.catchAsync(async (req, res, next) => {
 });
 
 const getAllUsers = genericHandler.getAll(UserModel);
+const createUser = genericHandler.createOne(UserModel);
 
-const createUser = helpers.catchAsync(async (req, res, next) => {
-  const newUser = await UserModel.create({
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    email: req.body.email,
-    password: req.body.password,
-    passwordConfirmation: req.body.passwordConfirmation,
-    role: 'employee',
-    active: helpers.checkIsBoolean(req.body.active),
-  });
-  const newUserObj = newUser.toObject();
-  helpers.deleteProperties(newUserObj, ['password', 'passwordChangedAt', 'passwordConfirmation']);
+const prepareBodyCreateEmployee = helpers.catchAsync(async (req, res, next) => {
+  req.body.role = 'employee';
+  req.body.active = helpers.checkIsBoolean(req.body.active);
 
-  res.status(201).json({ success: true, data: newUserObj });
+  next();
 });
 
 const userController = {
   getMe,
   getAllUsers,
   createUser,
+  prepareBodyCreateEmployee,
 };
 
 export default userController;

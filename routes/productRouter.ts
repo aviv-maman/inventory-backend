@@ -4,9 +4,12 @@ import { Router } from 'express';
 
 const productRouter = Router();
 
-productRouter.get('/get-all', productController.getAllProducts);
-// Protect all routes after this middleware
-productRouter.use(authController.verifySession);
-productRouter.post('/add-product', productController.createProduct);
+// Prepare body for all routes after this middleware
+productRouter.use(productController.prepareBodyProduct);
+
+productRouter
+  .route('/')
+  .get(productController.getAllProducts)
+  .post(authController.verifySession, authController.restrictTo('admin', 'employee'), productController.createProduct);
 
 export default productRouter;

@@ -31,6 +31,7 @@ const updateOne = (Model: Model<any>) =>
 const createOne = (Model: Model<any>) =>
   helpers.catchAsync(async (req, res, next) => {
     const doc = await Model.create(req.body);
+    helpers.deleteProperties(doc, ['password', 'passwordChangedAt', 'passwordConfirmation']);
 
     res.status(201).json({ success: true, data: doc });
   });

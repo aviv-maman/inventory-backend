@@ -4,9 +4,17 @@ import { Router } from 'express';
 
 const storeRouter = Router();
 
-// Protect all routes after this middleware
-storeRouter.use(authController.verifySession, authController.restrictTo('admin'));
+// Prepare body for all routes after this middleware
+storeRouter.use(storeController.prepareBodyStore);
 
-storeRouter.post('/add-store', storeController.createStore);
+storeRouter
+  .route('/')
+  .get(storeController.getAllStores)
+  .post(authController.verifySession, authController.restrictTo('admin'), storeController.createStore);
+
+storeRouter
+  .route('/:id')
+  .get(storeController.getStore)
+  .patch(authController.verifySession, authController.restrictTo('admin'), storeController.updateStore);
 
 export default storeRouter;
