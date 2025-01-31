@@ -17,4 +17,8 @@ storeRouter
   .get(storeController.getStore)
   .patch(authController.verifySession, authController.restrictTo('admin'), storeController.updateStore);
 
+storeRouter
+  .route('/:id/stock')
+  .patch(authController.verifySession, authController.restrictTo('admin', 'employee'), storeController.updateStock);
+
 export default storeRouter;

@@ -5,7 +5,7 @@ import helpers from '../utils/helpers.ts';
 
 const getMe = helpers.catchAsync(async (req, res, next) => {
   if (!req.body.localUser) {
-    return next(new AppError('The user belonging to this token does no longer exist.', 404));
+    return next(new AppError('The user belonging to this token does no longer exist', 404));
   }
   res.status(200).json({ success: true, data: req.body.localUser });
 });
