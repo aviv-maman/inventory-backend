@@ -38,7 +38,7 @@ const updateStock = helpers.catchAsync(async (req, res, next) => {
 
   const updatedStore = await store.updateOne(
     {
-      $addToSet: { products: { product, stock: newStockInStore } },
+      $set: { products: { product, stock: newStockInStore } },
     },
     { new: true, runValidators: true },
   );
