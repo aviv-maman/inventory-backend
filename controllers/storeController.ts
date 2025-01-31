@@ -28,7 +28,7 @@ const updateStock = helpers.catchAsync(async (req, res, next) => {
     return next(new AppError('Store was not found', 404));
   }
 
-  const currentStockInStore = store.products.find((item) => item._id === productId)?.stock || 0;
+  const currentStockInStore = store.products.find((item) => item.product?.toString() === productId)?.stock || 0;
   const stockOffset = newStockInStore - currentStockInStore;
 
   const updatedProduct = await product.updateOne(
