@@ -12,6 +12,7 @@ const getMe = helpers.catchAsync(async (req, res, next) => {
 
 const getAllUsers = genericHandler.getAll(UserModel);
 const createUser = genericHandler.createOne(UserModel);
+const getUser = genericHandler.getOne(UserModel);
 
 const prepareBodyCreateEmployee = helpers.catchAsync(async (req, res, next) => {
   req.body.role = 'employee';
@@ -25,6 +26,7 @@ const userController = {
   getAllUsers,
   createUser,
   prepareBodyCreateEmployee,
+  getUser,
 };
 
 export default userController;

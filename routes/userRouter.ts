@@ -12,4 +12,6 @@ userRouter
   .get(userController.getAllUsers)
   .post(userController.prepareBodyCreateEmployee, userController.createUser);
 
+userRouter.route('/:id').get(authController.restrictTo('admin'), userController.getUser);
+
 export default userRouter;
