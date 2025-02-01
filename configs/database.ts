@@ -14,7 +14,7 @@ const connectDB = async () => {
     console.log('Connecting to MongoDB. Please wait... ⏳');
     const connectionRes = await mongoose.connect(process.env.MONGODB_URI as string);
     if (connectionRes.ConnectionStates[1]) {
-      console.log(`MongoDB is connected on host ${connectionRes.connection.host} 🌐`);
+      console.log(`[2/2] MongoDB is connected on host ${connectionRes.connection.host} 🌐`);
       conn.isEstablished = true;
     }
   } catch (err) {

@@ -9,8 +9,7 @@ import errorHandler from './utils/errorHandler.ts';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-
-connectDB();
+console.log(`Starting server on port ${PORT} in ${process.env.NODE_ENV} environment. Please wait... ⚡`);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -31,7 +30,8 @@ if (process.env.NODE_ENV === 'development') {
 app.use('/api', router);
 
 const server = app.listen(PORT, () => {
-  console.log(`Server is listening on port ${PORT} in ${process.env.NODE_ENV} environment 🚀`);
+  console.log(`[1/2] Server is listening on port ${PORT} in ${process.env.NODE_ENV} environment 🚀`);
+  connectDB();
 });
 
 app.all('*', (req, res, next) => {
