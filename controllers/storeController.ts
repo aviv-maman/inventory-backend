@@ -56,7 +56,10 @@ const updateStock = helpers.catchAsync(async (req, res, next) => {
 });
 
 const getProductsByStoreIds = helpers.catchAsync(async (req, res, next) => {
-  const stores = await StoreModel.find()
+  const { store } = req.query;
+  const filterByStores = typeof store === 'string' ? store?.split(',') : undefined;
+
+  const stores = await StoreModel.find({ _id: { $in: filterByStores } })
     .populate({
       path: 'products',
       populate: {
