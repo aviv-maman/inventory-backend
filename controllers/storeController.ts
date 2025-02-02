@@ -64,9 +64,14 @@ const getProductsByStoreIds = helpers.catchAsync(async (req, res, next) => {
         model: 'Product',
       },
     })
+    .select('products')
     .exec();
+  const productsAndStock = stores.reduce<any>((currentArray, item) => {
+    currentArray.push(...item.products);
+    return currentArray;
+  }, []);
 
-  res.status(200).json({ success: true, data: stores });
+  res.status(200).json({ success: true, data: productsAndStock });
 });
 
 const storeController = {
