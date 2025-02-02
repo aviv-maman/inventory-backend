@@ -9,7 +9,7 @@ import errorHandler from './utils/errorHandler.ts';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-console.log(`Starting server on port ${PORT} in ${process.env.NODE_ENV} environment. Please wait... ⚡`);
+console.log(`[ * ] Starting server on port ${PORT} in ${process.env.NODE_ENV} environment. Please wait... ⚡`);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

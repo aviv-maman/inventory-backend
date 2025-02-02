@@ -11,14 +11,14 @@ const connectDB = async () => {
   }
 
   try {
-    console.log('Connecting to MongoDB. Please wait... ⏳');
+    console.log('[ * ] Connecting to MongoDB. Please wait... ⏳');
     const connectionRes = await mongoose.connect(process.env.MONGODB_URI as string);
     if (connectionRes.ConnectionStates[1]) {
       console.log(`[2/2] MongoDB is connected on host ${connectionRes.connection.host} 🌐`);
       conn.isEstablished = true;
     }
   } catch (err) {
-    console.error('Connection to MongoDB was failed. ❌');
+    console.error('[ * ] Connection to MongoDB was failed. ❌');
     const error = err as Error;
     if (process.env.NODE_ENV === 'production') {
       console.error(error.message);
