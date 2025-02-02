@@ -12,6 +12,8 @@ storeRouter
   .get(storeController.getAllStores)
   .post(authController.verifySession, authController.restrictTo('admin'), storeController.createStore);
 
+storeRouter.route('/products').get(storeController.getProductsByStoreIds);
+
 storeRouter
   .route('/:id')
   .get(storeController.getStore)

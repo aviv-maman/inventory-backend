@@ -55,6 +55,20 @@ const updateStock = helpers.catchAsync(async (req, res, next) => {
   res.status(200).json({ success: true, data: updatedStore });
 });
 
+const getProductsByStoreIds = helpers.catchAsync(async (req, res, next) => {
+  const stores = await StoreModel.find()
+    .populate({
+      path: 'products',
+      populate: {
+        path: 'product',
+        model: 'Product',
+      },
+    })
+    .exec();
+
+  res.status(200).json({ success: true, data: stores });
+});
+
 const storeController = {
   createStore,
   getAllStores,
@@ -62,6 +76,7 @@ const storeController = {
   updateStore,
   prepareBodyStore,
   updateStock,
+  getProductsByStoreIds,
 };
 
 export default storeController;
