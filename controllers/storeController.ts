@@ -47,8 +47,8 @@ const updateStock = helpers.catchAsync(async (req, res, next) => {
       product.stock += positiveOffset;
     } else if (newStockInStore < currentStockInStore.stock) {
       const negativeOffset = currentStockInStore.stock - newStockInStore;
-      product.stock -= negativeOffset;
       currentStockInStore.stock -= negativeOffset; // Decrease
+      product.stock -= negativeOffset;
     }
   }
   const updatedProduct = await product.save();
