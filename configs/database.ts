@@ -23,7 +23,8 @@ const connectDB = async () => {
     if (process.env.NODE_ENV === 'production') {
       console.error(error.message);
     } else if (process.env.NODE_ENV === 'development') {
-      console.error(error.name, error.message, error.stack);
+      console.error(error.name);
+      console.error(error.message);
     }
     return new AppError(error.message, 500);
   }
