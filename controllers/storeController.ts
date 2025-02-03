@@ -59,7 +59,7 @@ const getProductsByStoreIds = helpers.catchAsync(async (req, res, next) => {
   const { store, excludedStores, name } = req.query;
   const filterByStores = typeof store === 'string' ? store?.split(',') : undefined;
   const filterByExcludedStores = typeof excludedStores === 'string' ? excludedStores?.split(',') : undefined;
-  const sort = typeof req.query.sort === 'string' ? req.query.sort?.split(',').join(' ') : '-createdAt';
+  //const sort = typeof req.query.sort === 'string' ? req.query.sort?.split(',').join(' ') : '-createdAt';
   const page = Number(req.query.page) || 1;
   const limit = Number(req.query.limit) || 10;
   const skip = (page - 1) * limit;
@@ -86,10 +86,9 @@ const getProductsByStoreIds = helpers.catchAsync(async (req, res, next) => {
       populate: {
         path: 'product',
         model: 'Product',
-        options: { limit, skip, sort },
+        options: { limit, skip },
       },
     })
-    .select('products')
     .exec();
 
   const productsAndStock = stores.reduce<any>((currentArray, item) => {
