@@ -42,11 +42,13 @@ const updateStock = helpers.catchAsync(async (req, res, next) => {
     product.stock += newStockInStore;
   } else {
     if (newStockInStore > currentStockInStore.stock) {
-      currentStockInStore.stock += newStockInStore - currentStockInStore.stock; // Increase
-      product.stock += newStockInStore - currentStockInStore.stock;
+      const positiveOffset = newStockInStore - currentStockInStore.stock;
+      currentStockInStore.stock += positiveOffset; // Increase
+      product.stock += positiveOffset;
     } else if (newStockInStore < currentStockInStore.stock) {
-      product.stock -= currentStockInStore.stock - newStockInStore;
-      currentStockInStore.stock -= currentStockInStore.stock - newStockInStore; // Decrease
+      const negativeOffset = currentStockInStore.stock - newStockInStore;
+      product.stock -= negativeOffset;
+      currentStockInStore.stock -= negativeOffset; // Decrease
     }
   }
   const updatedProduct = await product.save();
