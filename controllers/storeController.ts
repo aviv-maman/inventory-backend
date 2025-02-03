@@ -56,19 +56,42 @@ const updateStock = helpers.catchAsync(async (req, res, next) => {
 });
 
 const getProductsByStoreIds = helpers.catchAsync(async (req, res, next) => {
-  const { store } = req.query;
+  const { store, excludedStores, name } = req.query;
   const filterByStores = typeof store === 'string' ? store?.split(',') : undefined;
+  const filterByExcludedStores = typeof excludedStores === 'string' ? excludedStores?.split(',') : undefined;
+  const sort = typeof req.query.sort === 'string' ? req.query.sort?.split(',').join(' ') : '-createdAt';
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
 
-  const stores = await StoreModel.find({ _id: { $in: filterByStores } })
+  const qObj = {
+    _id: { $in: filterByStores, $nin: filterByExcludedStores },
+    name: {
+      $or: [{ name: { $regex: name, $options: 'i' } }, { description: { $regex: name, $options: 'i' } }],
+    },
+  };
+  if (!filterByStores) {
+    helpers.deleteProperties(qObj._id, ['$in']);
+  }
+  if (!filterByExcludedStores) {
+    helpers.deleteProperties(qObj._id, ['$nin']);
+  }
+  if (!name) {
+    helpers.deleteProperties(qObj, ['name']);
+  }
+
+  const stores = await StoreModel.find(qObj)
     .populate({
       path: 'products',
       populate: {
         path: 'product',
         model: 'Product',
+        options: { limit, skip, sort },
       },
     })
     .select('products')
     .exec();
+
   const productsAndStock = stores.reduce<any>((currentArray, item) => {
     currentArray.push(...item.products);
     return currentArray;
