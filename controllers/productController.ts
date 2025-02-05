@@ -4,6 +4,7 @@ import helpers from '../utils/helpers.ts';
 
 const getAllProducts = genericHandler.getAll(ProductModel);
 const createProduct = genericHandler.createOne(ProductModel);
+const getProduct = genericHandler.getOne(ProductModel);
 
 const prepareBodyProduct = helpers.catchAsync(async (req, res, next) => {
   req.body.price = { fullPrice: Number(req.body.fullPrice), discountPercentage: Number(req.body.discountPercentage) };
@@ -15,6 +16,7 @@ const productController = {
   createProduct,
   getAllProducts,
   prepareBodyProduct,
+  getProduct,
 };
 
 export default productController;

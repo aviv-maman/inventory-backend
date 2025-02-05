@@ -12,4 +12,6 @@ productRouter
   .get(productController.getAllProducts)
   .post(authController.verifySession, authController.restrictTo('admin', 'employee'), productController.createProduct);
 
+productRouter.route('/:id').get(productController.getProduct);
+
 export default productRouter;
