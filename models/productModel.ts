@@ -28,5 +28,5 @@ productSchema.virtual('price.discountPrice').get(function (this: Product) {
   return this.price.fullPrice - this.price.fullPrice * (this.price.discountPercentage / 100);
 });
 
-type Product = InferSchemaType<typeof productSchema>;
 export const ProductModel = model('Product', productSchema);
+type Product = InferSchemaType<typeof productSchema>;

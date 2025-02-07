@@ -1,9 +1,8 @@
-import { Schema, model } from 'mongoose';
+import { type InferSchemaType, Schema, model } from 'mongoose';
 
 const categorySchema = new Schema(
   {
     name: { type: String, required: [true, 'A name is required'] },
-    ancestors: [{ type: Schema.Types.ObjectId, ref: 'Category' }],
     parent: { type: Schema.Types.ObjectId, ref: 'Category', default: null },
     __v: { type: Number, select: false },
   },
@@ -13,3 +12,4 @@ const categorySchema = new Schema(
 );
 
 export const CategoryModel = model('Category', categorySchema);
+export type Category = InferSchemaType<typeof categorySchema>;

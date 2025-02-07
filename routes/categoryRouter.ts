@@ -7,6 +7,10 @@ const categoryRouter = Router();
 categoryRouter
   .route('/')
   .get(categoryController.getAllCategories)
-  .post(authController.verifySession, authController.restrictTo('admin'), categoryController.createCategory);
+  .post(
+    authController.verifySession,
+    authController.restrictTo('admin', 'employee'),
+    categoryController.createCategory,
+  );
 
 export default categoryRouter;

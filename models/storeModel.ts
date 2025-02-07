@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { type InferSchemaType, Schema, model } from 'mongoose';
 
 const storeSchema = new Schema(
   {
@@ -20,3 +20,4 @@ const storeSchema = new Schema(
 );
 
 export const StoreModel = model('Store', storeSchema);
+export type Store = InferSchemaType<typeof storeSchema>;

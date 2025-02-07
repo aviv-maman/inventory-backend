@@ -1,5 +1,5 @@
 import { hash } from 'bcrypt';
-import { Schema, model } from 'mongoose';
+import { type InferSchemaType, Schema, model } from 'mongoose';
 
 const userSchema = new Schema(
   {
@@ -48,3 +48,4 @@ userSchema.pre('save', function (next) {
 });
 
 export const UserModel = model('User', userSchema);
+export type User = InferSchemaType<typeof userSchema>;
