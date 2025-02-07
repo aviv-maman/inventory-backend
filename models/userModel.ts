@@ -1,33 +1,13 @@
 import { hash } from 'bcrypt';
-import { type InferSchemaType, Schema, model } from 'mongoose';
+import { Schema, model } from 'mongoose';
 
 const userSchema = new Schema(
   {
-    firstName: {
-      type: String,
-      required: [true, 'Please enter your first name!'],
-    },
-    lastName: {
-      type: String,
-      required: [true, 'Please enter your last name!'],
-    },
-    email: {
-      type: String,
-      required: [true, 'Please provide your email'],
-      unique: true,
-      lowercase: true,
-    },
-    role: {
-      type: String,
-      enum: ['customer', 'employee', 'admin'],
-      default: 'customer',
-    },
-    password: {
-      type: String,
-      required: [true, 'Please provide a password'],
-      minlength: 8,
-      select: false,
-    },
+    firstName: { type: String, required: [true, 'Please enter your first name!'] },
+    lastName: { type: String, required: [true, 'Please enter your last name!'] },
+    email: { type: String, required: [true, 'Please provide your email'], unique: true, lowercase: true },
+    role: { type: String, enum: ['customer', 'employee', 'admin'], default: 'customer' },
+    password: { type: String, required: [true, 'Please provide a password'], minlength: 8, select: false },
     passwordConfirmation: {
       type: String,
       required: [true, 'Please confirm your password'],
@@ -39,18 +19,9 @@ const userSchema = new Schema(
       //     message: 'Passwords are not the same!',
       //   },
     },
-    passwordChangedAt: {
-      type: Date,
-      select: false,
-    },
-    __v: {
-      type: Number,
-      select: false,
-    },
-    active: {
-      type: Boolean,
-      default: true,
-    },
+    passwordChangedAt: { type: Date, select: false },
+    __v: { type: Number, select: false },
+    active: { type: Boolean, default: true },
   },
   {
     timestamps: true, // add updatedAt
@@ -76,11 +47,4 @@ userSchema.pre('save', function (next) {
   next();
 });
 
-// userSchema.pre(/^find/, function (next) {
-//   // this points to the current query
-//   this.find({ active: { $ne: false } });
-//   next();
-// });
-
-export type User = InferSchemaType<typeof userSchema>;
 export const UserModel = model('User', userSchema);
