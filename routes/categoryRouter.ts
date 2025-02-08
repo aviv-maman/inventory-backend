@@ -6,11 +6,13 @@ const categoryRouter = Router();
 
 categoryRouter
   .route('/')
-  .get(categoryController.getCategories)
+  .get(categoryController.getAllCategories)
   .post(
     authController.verifySession,
     authController.restrictTo('admin', 'employee'),
     categoryController.createCategory,
   );
+
+categoryRouter.route('/with-ancestors').get(categoryController.getCategoriesWithAncestors);
 
 export default categoryRouter;

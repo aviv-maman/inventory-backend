@@ -22,7 +22,7 @@ const populateAncestors = async (category: Category): Promise<Category[]> => {
   return result;
 };
 
-const getCategoriesByParentId = async (parentId: string) => {
+const getCategoriesByParentId = async (parentId: string | null) => {
   try {
     const categories = await CategoryModel.find({ parent: parentId }).exec();
     const populatedCategories = await Promise.all(
@@ -42,19 +42,46 @@ const getCategoriesByParentId = async (parentId: string) => {
   }
 };
 
-const getCategories = helpers.catchAsync(async (req, res, next) => {
-  if (req.query.withAncestors && req.query.parent && typeof req.query.parent === 'string') {
+const getCategoriesByCategoryId = async (categoryId: string) => {
+  try {
+    const parent = await CategoryModel.findById(categoryId).select('_id name parent').exec();
+    if (parent) {
+      const ancestors = await populateAncestors(parent);
+      const categories = [
+        {
+          ...parent.toObject(),
+          ancestors: ancestors.map((a) => ({ _id: a._id, name: a.name })),
+        },
+      ];
+      return categories;
+    }
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    throw error;
+  }
+};
+
+const getCategoriesWithAncestors = helpers.catchAsync(async (req, res, next) => {
+  if (req.query.parent && typeof req.query.parent === 'string') {
     const categories = await getCategoriesByParentId(req.query.parent);
+    if (categories.length) {
+      res.status(200).json({ success: true, data: categories, currentCount: categories.length });
+    } else {
+      //Last Child
+      const categories = await getCategoriesByCategoryId(req.query.parent);
+
+      res.status(200).json({ success: true, data: categories, currentCount: 0 });
+    }
+  } else {
+    const categories = await getCategoriesByParentId(null);
     if (categories) {
       res.status(200).json({ success: true, data: categories, currentCount: categories.length });
     } else {
       return next(new AppError('category was not found', 404));
     }
-  } else {
-    return getAllCategories(req, res, next);
   }
 });
 
-const categoryController = { createCategory, getCategories };
+const categoryController = { createCategory, getAllCategories, getCategoriesWithAncestors };
 
 export default categoryController;

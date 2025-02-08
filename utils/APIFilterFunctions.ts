@@ -115,7 +115,7 @@ class APIFilterFunctions {
       const filterByParent = this.queryString.parent;
       this.query = this.query.find({ parent: filterByParent });
     } else {
-      this.query = this.query.find({ parent: null });
+      this.query = this.query.find();
       this.queryString.parent = undefined;
     }
 
