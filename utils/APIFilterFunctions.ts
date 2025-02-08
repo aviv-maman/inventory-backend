@@ -16,6 +16,7 @@ type QueryString = {
   count?: number;
   role?: string;
   email?: string;
+  parent?: string;
 };
 
 class APIFilterFunctions {
@@ -104,6 +105,18 @@ class APIFilterFunctions {
       });
     } else {
       this.queryString.email = undefined;
+    }
+
+    return this;
+  }
+
+  parentFilter() {
+    if (this.queryString.parent) {
+      const filterByParent = this.queryString.parent;
+      this.query = this.query.find({ parent: filterByParent });
+    } else {
+      this.query = this.query.find({ parent: null });
+      this.queryString.parent = undefined;
     }
 
     return this;

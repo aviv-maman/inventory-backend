@@ -6,7 +6,7 @@ const categoryRouter = Router();
 
 categoryRouter
   .route('/')
-  .get(categoryController.getAllCategories)
+  .get(categoryController.getCategories)
   .post(
     authController.verifySession,
     authController.restrictTo('admin', 'employee'),
