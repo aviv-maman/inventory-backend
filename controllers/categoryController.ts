@@ -22,11 +22,28 @@ const populateAncestors = async (category: Category): Promise<Category[]> => {
   return result;
 };
 
-const getCategoriesByParentId = async (parentId: string | null) => {
+const getAncestorsByCategoryId = async (categoryId: string | null) => {
   try {
-    const categories = await CategoryModel.find({ parent: parentId }).exec();
+    if (categoryId) {
+      const category = await CategoryModel.findById(categoryId);
+      if (category) {
+        const ancestors = await populateAncestors(category);
+        return [...ancestors, category];
+      }
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    throw error;
+  }
+};
+
+const getChildrenByCategoryId = async (categoryId: string | null) => {
+  try {
+    const children = await CategoryModel.find({ parent: categoryId }).exec();
     const populatedCategories = await Promise.all(
-      categories.map(async (category) => {
+      children.map(async (category) => {
         const ancestors = await populateAncestors(category);
         return {
           ...category.toObject(),
@@ -34,7 +51,6 @@ const getCategoriesByParentId = async (parentId: string | null) => {
         };
       }),
     );
-
     return populatedCategories;
   } catch (error) {
     console.error('Error fetching categories:', error);
@@ -42,40 +58,18 @@ const getCategoriesByParentId = async (parentId: string | null) => {
   }
 };
 
-const getCategoriesByCategoryId = async (categoryId: string) => {
-  try {
-    const parent = await CategoryModel.findById(categoryId).select('_id name parent').exec();
-    if (parent) {
-      const ancestors = await populateAncestors(parent);
-      const categories = [
-        {
-          ...parent.toObject(),
-          ancestors: ancestors.map((a) => ({ _id: a._id, name: a.name })),
-        },
-      ];
-      return categories;
-    }
-  } catch (error) {
-    console.error('Error fetching categories:', error);
-    throw error;
-  }
-};
-
 const getCategoriesWithAncestors = helpers.catchAsync(async (req, res, next) => {
-  if (req.query.parent && typeof req.query.parent === 'string') {
-    const categories = await getCategoriesByParentId(req.query.parent);
-    if (categories.length) {
-      res.status(200).json({ success: true, data: categories, currentCount: categories.length });
-    } else {
-      //Last Child
-      const categories = await getCategoriesByCategoryId(req.query.parent);
-
-      res.status(200).json({ success: true, data: categories, currentCount: 0 });
-    }
+  if (req.query.categoryId && typeof req.query.categoryId === 'string') {
+    const [children, ancestors] = await Promise.all([
+      getChildrenByCategoryId(req.query.categoryId),
+      getAncestorsByCategoryId(req.query.categoryId),
+    ]);
+    res.status(200).json({ success: true, data: { children, ancestors }, count: children.length });
   } else {
-    const categories = await getCategoriesByParentId(null);
-    if (categories) {
-      res.status(200).json({ success: true, data: categories, currentCount: categories.length });
+    //No start ID => root/no ancestors
+    const children = await getChildrenByCategoryId(null);
+    if (children) {
+      res.status(200).json({ success: true, data: { children, ancestors: null }, count: children.length });
     } else {
       return next(new AppError('category was not found', 404));
     }
