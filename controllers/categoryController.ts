@@ -64,12 +64,24 @@ const getCategoriesWithAncestors = helpers.catchAsync(async (req, res, next) => 
       getChildrenByCategoryId(req.query.categoryId),
       getAncestorsByCategoryId(req.query.categoryId),
     ]);
-    res.status(200).json({ success: true, data: { children, ancestors }, count: children.length });
+    res
+      .status(200)
+      .json({
+        success: true,
+        data: { children, ancestors },
+        count: { children: children.length, ancestors: ancestors?.length },
+      });
   } else {
     //No start ID => root/no ancestors
     const children = await getChildrenByCategoryId(null);
     if (children) {
-      res.status(200).json({ success: true, data: { children, ancestors: null }, count: children.length });
+      res
+        .status(200)
+        .json({
+          success: true,
+          data: { children, ancestors: null },
+          count: { children: children.length, ancestors: 0 },
+        });
     } else {
       return next(new AppError('category was not found', 404));
     }
