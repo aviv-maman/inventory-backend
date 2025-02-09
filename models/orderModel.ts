@@ -8,7 +8,7 @@ const orderSchema = new Schema(
       {
         product: { type: Schema.Types.ObjectId, ref: 'Product' },
         store: { type: Schema.Types.ObjectId, ref: 'Store' },
-        amount: { type: Number, default: 1 },
+        quantity: { type: Number, default: 1 },
         price: { type: Number, required: [true, 'An address is required'] },
         _id: false,
       },

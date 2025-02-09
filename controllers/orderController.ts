@@ -1,33 +1,89 @@
+import { OrderModel } from '../models/orderModel.ts';
+import { ProductModel } from '../models/productModel.ts';
+import { type Store, StoreModel } from '../models/storeModel.ts';
 import AppError from '../utils/AppError.ts';
 import helpers from '../utils/helpers.ts';
 
-const checkAvailabilityAndPrice = helpers.catchAsync(async (req, res, next) => {
-  const products = req.body.cart.products as { _id: string; quantity: number; price: number }[] | undefined;
-
-  if (Array.isArray(products)) {
-    products.forEach((product) => {
-      console.log(product);
-    });
-  }
-});
-
 const prepareOrder = helpers.catchAsync(async (req, res, next) => {
-  const order = {
+  const newOrder = {
     user: req.body.localUser._id as string | undefined,
     address: req.body.address as string | undefined,
-    products: req.body.cart.products as { _id: string; quantity: number; price: number }[] | undefined,
+    products: req.body.cart.products as { _id: string; quantity: number; price: number; store: Store }[] | undefined,
     totalPrice: req.body.cart.totalPrice as number | undefined,
+    calculatedTotalPrice: 0,
   };
+  if (!newOrder.user) return next(new AppError('User is missing', 404));
+  if (!newOrder.address) return next(new AppError('Address is missing', 404));
+  if (newOrder.totalPrice && newOrder.totalPrice <= 0) return next(new AppError('Wrong total price', 401));
 
+  if (Array.isArray(newOrder.products)) {
+    newOrder.products.forEach(async (element) => {
+      const product = await ProductModel.findById(element._id);
+      if (!product) return next(new AppError('Product was not found', 404));
+      if (element.quantity > product.stock) return next(new AppError('Not enough stock is available', 401));
+      if (!product?.price) return next(new AppError('A price of a product is missing', 404));
+      const discountPrice =
+        product.price.fullPrice - product.price.fullPrice * (product.price.discountPercentage / 100);
+      if (element.price !== discountPrice) return next(new AppError("A price of a product doesn't match", 401));
+      const storesWithCurrentProduct = await StoreModel.find({
+        'products.product': element._id,
+        'products.stock': { $gte: element.quantity },
+        active: true,
+      });
+      if (!storesWithCurrentProduct?.length)
+        return next(new AppError(`A store with enough stock of ${product.name} wasn't found`, 404));
+      element.store = storesWithCurrentProduct[0];
+      newOrder.calculatedTotalPrice += element.quantity * element.price;
+    });
+
+    // if (newOrder.calculatedTotalPrice !== newOrder.totalPrice) {
+    //   return next(new AppError("Total price doesn't match", 401));
+    // }
+    req.body.newOrder = newOrder;
+  }
   next();
 });
 
 const checkout = helpers.catchAsync(async (req, res, next) => {
-  if (!req.body.localUser._id.toString()) {
-    return next(new AppError('The user ID is missing or the token belongs to someone else.', 404));
+  if (!req.body.newOrder) {
+    return next(new AppError("Order wasn't found.", 404));
   }
+  const orderDetails = {
+    user: req.body.newOrder.user._id as string,
+    address: req.body.newOrder.address as string,
+    products: req.body.newOrder.products as { _id: string; quantity: number; price: number; store: Store }[],
+    totalPrice: req.body.newOrder.totalPrice as number,
+  };
+  const preparedProducts = orderDetails.products.map(async (item) => ({
+    product: item._id,
+    store: item.store,
+    quantity: item.quantity,
+    price: item.price,
+  }));
 
-  res.status(200).json({ success: true, cart: req.body.cart });
+  const newOrder = await OrderModel.create({
+    user: orderDetails.user,
+    address: orderDetails.address,
+    products: preparedProducts,
+    totalPrice: orderDetails.totalPrice,
+  });
+
+  if (!newOrder) return next(new AppError('Something went wrong while creating the order.', 500));
+
+  newOrder.products.forEach(async (element) => {
+    const product = await ProductModel.findById(element.product);
+    if (!product) return next(new AppError('Product was not found', 404));
+    const store = await StoreModel.findById(element.store);
+    if (!store) return next(new AppError('Store was not found', 404));
+    product.stock -= element.quantity;
+    const currentStockInStore = store.products.find((item) => item.product?.toString() === element._id);
+    if (!currentStockInStore) return next(new AppError('Product was not found in selected store', 404));
+    currentStockInStore.stock -= element.quantity;
+    await product.save();
+    await store.save();
+  });
+
+  res.status(200).json({ success: true, order: newOrder });
 });
 
 const orderController = { checkout, prepareOrder };
