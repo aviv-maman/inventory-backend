@@ -7,6 +7,6 @@ const orderRouter = Router();
 // Protect all routes after this middleware
 orderRouter.use(authController.verifySession);
 
-orderRouter.post('/checkout', orderController.checkout);
+orderRouter.post('/checkout', orderController.prepareOrder, orderController.checkout);
 
 export default orderRouter;
