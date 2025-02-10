@@ -12,19 +12,22 @@ const prepareOrder = helpers.catchAsync(async (req, res, next) => {
     totalPrice: req.body.cart.totalPrice as number | undefined,
     calculatedTotalPrice: 0,
   };
+
   if (!newOrder.user) return next(new AppError('User is missing', 404));
   if (!newOrder.address) return next(new AppError('Address is missing', 404));
   if (newOrder.totalPrice && newOrder.totalPrice <= 0) return next(new AppError('Wrong total price', 401));
 
   if (Array.isArray(newOrder.products)) {
-    newOrder.products.forEach(async (element) => {
+    for (const element of newOrder.products) {
       const product = await ProductModel.findById(element._id);
       if (!product) return next(new AppError('Product was not found', 404));
       if (element.quantity > product.stock) return next(new AppError('Not enough stock is available', 401));
       if (!product?.price) return next(new AppError('A price of a product is missing', 404));
+
       const discountPrice =
         product.price.fullPrice - product.price.fullPrice * (product.price.discountPercentage / 100);
       if (element.price !== discountPrice) return next(new AppError("A price of a product doesn't match", 401));
+
       const storesWithCurrentProduct = await StoreModel.find({
         'products.product': element._id,
         'products.stock': { $gte: element.quantity },
@@ -32,13 +35,14 @@ const prepareOrder = helpers.catchAsync(async (req, res, next) => {
       });
       if (!storesWithCurrentProduct?.length)
         return next(new AppError(`A store with enough stock of ${product.name} wasn't found`, 404));
+
       element.store = storesWithCurrentProduct[0];
       newOrder.calculatedTotalPrice += element.quantity * element.price;
-    });
+    }
 
-    // if (newOrder.calculatedTotalPrice !== newOrder.totalPrice) {
-    //   return next(new AppError("Total price doesn't match", 401));
-    // }
+    if (newOrder.calculatedTotalPrice !== newOrder.totalPrice) {
+      return next(new AppError("Total price doesn't match", 401));
+    }
     req.body.newOrder = newOrder;
   }
   next();
