@@ -3,14 +3,15 @@ import { type InferSchemaType, Schema, model } from 'mongoose';
 
 const userSchema = new Schema(
   {
-    firstName: { type: String, required: [true, 'Please enter your first name!'] },
-    lastName: { type: String, required: [true, 'Please enter your last name!'] },
-    email: { type: String, required: [true, 'Please provide your email'], unique: true, lowercase: true },
+    firstName: { type: String, required: [true, 'First name is required'] },
+    lastName: { type: String, required: [true, 'Last name is required'] },
+    email: { type: String, required: [true, 'Email is required'], unique: true, lowercase: true },
     role: { type: String, enum: ['customer', 'employee', 'admin'], default: 'customer' },
-    password: { type: String, required: [true, 'Please provide a password'], minlength: 8, select: false },
+    address: { type: String, required: [true, 'Address is required'] },
+    password: { type: String, required: [true, 'Password is required'], minlength: 8, select: false },
     passwordConfirmation: {
       type: String,
-      required: [true, 'Please confirm your password'],
+      required: [true, 'Password confirmation is required'],
       //   validate: {
       //     // This only works on CREATE and SAVE!!! So on updating a user, we need to use Save as well and not findOneAndUpdate
       //     validator: function (this: IUser, element: string) {
