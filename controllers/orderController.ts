@@ -65,26 +65,25 @@ const checkout = helpers.catchAsync(async (req, res, next) => {
     price: item.price,
   }));
 
+  for (const element of preparedProducts) {
+    const product = await ProductModel.findById(element.product);
+    if (!product) return next(new AppError('Product was not found', 404));
+    const store = await StoreModel.findById(element.store);
+    if (!store) return next(new AppError('Store was not found', 404));
+    const currentStockInStore = store.products.find((item) => item.product?.toString() === element.product);
+    if (!currentStockInStore) return next(new AppError('Product was not found in selected store', 404));
+
+    product.stock -= element.quantity;
+    currentStockInStore.stock -= element.quantity;
+    await product.save();
+    await store.save();
+  }
+
   const newOrder = await OrderModel.create({
     user: orderDetails.user,
     address: orderDetails.address,
     products: preparedProducts,
     totalPrice: orderDetails.totalPrice,
-  });
-
-  if (!newOrder) return next(new AppError('Something went wrong while creating the order.', 500));
-
-  newOrder.products.forEach(async (element) => {
-    const product = await ProductModel.findById(element.product);
-    if (!product) return next(new AppError('Product was not found', 404));
-    const store = await StoreModel.findById(element.store);
-    if (!store) return next(new AppError('Store was not found', 404));
-    product.stock -= element.quantity;
-    const currentStockInStore = store.products.find((item) => item.product?.toString() === element._id);
-    if (!currentStockInStore) return next(new AppError('Product was not found in selected store', 404));
-    currentStockInStore.stock -= element.quantity;
-    await product.save();
-    await store.save();
   });
 
   res.status(200).json({ success: true, order: newOrder });
