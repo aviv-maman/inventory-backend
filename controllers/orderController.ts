@@ -58,7 +58,7 @@ const checkout = helpers.catchAsync(async (req, res, next) => {
     products: req.body.newOrder.products as { _id: string; quantity: number; price: number; store: Store }[],
     totalPrice: req.body.newOrder.totalPrice as number,
   };
-  const preparedProducts = orderDetails.products.map(async (item) => ({
+  const preparedProducts = orderDetails.products.map((item) => ({
     product: item._id,
     store: item.store,
     quantity: item.quantity,
