@@ -9,4 +9,6 @@ orderRouter.use(authController.verifySession);
 
 orderRouter.post('/checkout', orderController.prepareOrder, orderController.checkout);
 
+orderRouter.route('/:id').get(orderController.getOrder);
+
 export default orderRouter;

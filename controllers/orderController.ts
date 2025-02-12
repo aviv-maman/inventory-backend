@@ -2,6 +2,7 @@ import { OrderModel } from '../models/orderModel.ts';
 import { ProductModel } from '../models/productModel.ts';
 import { type Store, StoreModel } from '../models/storeModel.ts';
 import AppError from '../utils/AppError.ts';
+import genericHandler from '../utils/genericHandler.ts';
 import helpers from '../utils/helpers.ts';
 
 const prepareOrder = helpers.catchAsync(async (req, res, next) => {
@@ -89,6 +90,8 @@ const checkout = helpers.catchAsync(async (req, res, next) => {
   res.status(200).json({ success: true, order: newOrder });
 });
 
-const orderController = { checkout, prepareOrder };
+const getOrder = genericHandler.getOne(OrderModel);
+
+const orderController = { checkout, prepareOrder, getOrder };
 
 export default orderController;
