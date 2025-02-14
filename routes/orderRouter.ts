@@ -11,4 +11,6 @@ orderRouter.post('/checkout', orderController.prepareOrder, orderController.chec
 
 orderRouter.route('/:id').get(orderController.getOrder);
 
+orderRouter.route('/').get(orderController.getAllOrders);
+
 export default orderRouter;

@@ -87,11 +87,12 @@ const checkout = helpers.catchAsync(async (req, res, next) => {
     totalPrice: orderDetails.totalPrice,
   });
 
-  res.status(200).json({ success: true, order: newOrder });
+  res.status(200).json({ success: true, data: newOrder });
 });
 
 const getOrder = genericHandler.getOne(OrderModel);
+const getAllOrders = genericHandler.getAll(OrderModel);
 
-const orderController = { checkout, prepareOrder, getOrder };
+const orderController = { checkout, prepareOrder, getOrder, getAllOrders };
 
 export default orderController;

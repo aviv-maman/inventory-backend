@@ -68,6 +68,7 @@ const getAll = (Model: Model<any>) =>
     // To allow for nested GET reviews on product (hack)
     let filter = {} as FilterQuery<any>;
     if (req.params.productId) filter = { product: req.params.productId };
+    if (req.params.userId) filter = { user: req.params.userId };
 
     const paginatedQuery = new APIFilterFunctions(Model.find(filter), req.query)
       .filter()
